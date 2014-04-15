@@ -1,0 +1,13 @@
+application: helloworld
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+skip_files:
+  - ^skip\.txt$
+
+handlers:
+- url: /static\.txt
+  static_files: static.txt
+  upload: static.txt
