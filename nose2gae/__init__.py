@@ -135,12 +135,15 @@ class Nose2GAE(events.Plugin):
                 'self._datastore_stub_util_module.%s' % self._gae_datastore_consistency_policy)
         require_indexes = self._gae_datastore_require_indexes and not indexes_optional
         _GAE_TESTBED.init_datastore_v3_stub(
-            consistency_policy=consistency_policy, require_indexes=require_indexes,
-            use_sqlite=True, root_path=self._gae_app_path if require_indexes else None)
+            consistency_policy=consistency_policy, require_indexes=require_indexes, use_sqlite=True,
+            root_path=self._gae_app_path if require_indexes else None)
 
         _GAE_TESTBED.init_taskqueue_stub(root_path=self._gae_app_path)
 
     def _stopGaeTestbed(self):
         global _GAE_TESTBED
+        datastore = _GAE_TESTBED._test_stub_map.GetStub(self._testbed_module.DATASTORE_SERVICE_NAME)
+        datastore.Flush()
+        datastore.Clear()
         _GAE_TESTBED.deactivate()
         _GAE_TESTBED = None
