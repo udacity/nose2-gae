@@ -145,8 +145,5 @@ class Nose2GAE(events.Plugin):
         global _GAE_TESTBED
         if _GAE_TESTBED is None:
             return
-        datastore = _GAE_TESTBED._test_stub_map.GetStub(self._testbed_module.DATASTORE_SERVICE_NAME)
-        datastore.Flush()
-        datastore.Clear()
         _GAE_TESTBED.deactivate()
         _GAE_TESTBED = None
