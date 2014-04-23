@@ -87,8 +87,9 @@ class Nose2GAE(events.Plugin):
 
     def testOutcome(self, event):
         self._stopGaeTestbed()
-        os.chdir(self._original_dir)
-        self._original_dir = None
+        if self._original_dir is not None:
+            os.chdir(self._original_dir)
+            self._original_dir = None
 
     def _initGaeTestbed(self):
         # we want to put GAE sys path right at the front, not at the second place as GAE SDK does
@@ -142,6 +143,8 @@ class Nose2GAE(events.Plugin):
 
     def _stopGaeTestbed(self):
         global _GAE_TESTBED
+        if _GAE_TESTBED is None:
+            return
         datastore = _GAE_TESTBED._test_stub_map.GetStub(self._testbed_module.DATASTORE_SERVICE_NAME)
         datastore.Flush()
         datastore.Clear()
