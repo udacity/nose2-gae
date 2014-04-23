@@ -130,16 +130,20 @@ class Nose2GAE(events.Plugin):
                 continue
             getattr(_GAE_TESTBED, 'init_%s_stub' % stub_name)()
 
-        consistency_policy = None
-        if self._gae_datastore_consistency_policy:
-            consistency_policy = eval(
-                'self._datastore_stub_util_module.%s' % self._gae_datastore_consistency_policy)
-        require_indexes = self._gae_datastore_require_indexes and not indexes_optional
-        _GAE_TESTBED.init_datastore_v3_stub(
-            consistency_policy=consistency_policy, require_indexes=require_indexes, use_sqlite=True,
-            root_path=self._gae_app_path if require_indexes else None)
+        if 'datastore_v3' in self._gae_stubs_to_enable:
+            consistency_policy = None
+            if self._gae_datastore_consistency_policy:
+                # this needs to be re-evaluated at every initialization since it's mutable and tests
+                # might have overriden it
+                consistency_policy = eval(
+                    'self._datastore_stub_util_module.%s' % self._gae_datastore_consistency_policy)
+            require_indexes = self._gae_datastore_require_indexes and not indexes_optional
+            _GAE_TESTBED.init_datastore_v3_stub(
+                consistency_policy=consistency_policy, require_indexes=require_indexes,
+                use_sqlite=True, root_path=self._gae_app_path if require_indexes else None)
 
-        _GAE_TESTBED.init_taskqueue_stub(root_path=self._gae_app_path)
+        if 'taskqueue' in self._gae_stubs_to_enable:
+            _GAE_TESTBED.init_taskqueue_stub(root_path=self._gae_app_path)
 
     def _stopGaeTestbed(self):
         global _GAE_TESTBED
