@@ -33,7 +33,15 @@ class Nose2GAE(events.Plugin):
     configSection = 'nose2-gae'
     commandLineSwitch = (None, 'with-gae', 'Run tests inside the Google Appengine sandbox')
 
-    def handleArgs(self, event):
+    def __init__(self, *args, **kwargs):
+        super(Nose2GAE, self).__init__(*args, **kwargs)
+        self._config_loaded = False
+        self._gae_testbed_inited = False
+
+    def _loadConfig(self):
+        if self._config_loaded:
+            return
+
         self._gae_path = os.path.abspath(
             self.config.as_str('lib-root', '/usr/local/google_appengine'))
         appserver_py = os.path.join(self._gae_path, 'dev_appserver.py')
@@ -68,7 +76,10 @@ class Nose2GAE(events.Plugin):
         # TODO
         self._gae_disable_sandbox = self.config.as_bool('without-sandbox', False)
 
-        self._gae_testbed_inited = False
+        self._config_loaded = True
+
+    def handleArgs(self, event):
+        self._loadConfig()
 
     def createTests(self, event):
         self._startGaeTestbed()
@@ -77,9 +88,12 @@ class Nose2GAE(events.Plugin):
         event.pluginClasses.append(self.__class__)
 
     def startSubprocess(self, event):
+        self._loadConfig()
         self._startGaeTestbed()
 
     def startTest(self, event):
+        # work around MP plugin brokenness: https://github.com/nose-devs/nose2/issues/167
+        self._loadConfig()
         self._startGaeTestbed(indexes_optional=event.test.id() in _NO_INDEX_CHECK_NEEDED)
         # this is normally done by the sandbox
         self._original_dir = os.path.abspath(os.getcwd())
