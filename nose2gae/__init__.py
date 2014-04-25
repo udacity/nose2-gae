@@ -33,7 +33,7 @@ class Nose2GAE(events.Plugin):
     configSection = 'nose2-gae'
     commandLineSwitch = (None, 'with-gae', 'Run tests inside the Google Appengine sandbox')
 
-    def __init__(self):
+    def handleArgs(self, event):
         self._gae_path = os.path.abspath(
             self.config.as_str('lib-root', '/usr/local/google_appengine'))
         appserver_py = os.path.join(self._gae_path, 'dev_appserver.py')
