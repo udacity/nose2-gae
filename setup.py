@@ -4,7 +4,7 @@ import os
 from distutils.core import setup
 
 NAME = 'nose2-gae'
-VERSION = '0.1.5'
+VERSION = '0.1.6'
 PACKAGES = ['nose2gae']
 DESCRIPTION = 'nose2 plugin to run the tests in the Google App Engine environment'
 URL = 'https://github.com/udacity/nose2-gae'
