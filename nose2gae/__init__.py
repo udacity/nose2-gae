@@ -37,6 +37,7 @@ class Nose2GAE(events.Plugin):
         super(Nose2GAE, self).__init__(*args, **kwargs)
         self._config_loaded = False
         self._gae_testbed_inited = False
+        self._original_dir = None
 
     def _loadConfig(self):
         if self._config_loaded:
